@@ -28,9 +28,10 @@ from oauth2client import client
 class Storage(client.Storage):
     """Store and retrieve a single credential to and from a file."""
 
-    def __init__(self, filename):
+    def __init__(self, filename, allow_sym=True):
         super(Storage, self).__init__(lock=threading.Lock())
         self._filename = filename
+        self._allow_sym = allow_sym
 
     def locked_get(self):
         """Retrieve Credential from file.
@@ -42,7 +43,7 @@ class Storage(client.Storage):
             IOError if the file is a symbolic link.
         """
         credentials = None
-        _helpers.validate_file(self._filename)
+        _helpers.validate_file(self._filename, allow_sym=self._allow_sym)
         try:
             f = open(self._filename, 'rb')
             content = f.read()
@@ -81,7 +82,7 @@ class Storage(client.Storage):
             IOError if the file is a symbolic link.
         """
         self._create_file_if_needed()
-        _helpers.validate_file(self._filename)
+        _helpers.validate_file(self._filename, allow_sym=self._allow_sym)
         f = open(self._filename, 'w')
         f.write(credentials.to_json())
         f.close()

@@ -246,8 +246,8 @@ def _add_query_parameter(url, name, value):
         return update_query_params(url, {name: value})
 
 
-def validate_file(filename):
-    if os.path.islink(filename):
+def validate_file(filename, allow_sym=False):
+    if os.path.islink(filename) and not allow_sym:
         raise IOError(_SYM_LINK_MESSAGE.format(filename))
     elif os.path.isdir(filename):
         raise IOError(_IS_DIR_MESSAGE.format(filename))
